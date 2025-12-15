@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { base44 } from '@/api/base44Client';
+import { supabase } from '@/api/supabaseClient';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
@@ -22,14 +22,26 @@ export default function VenturesForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    await base44.entities.Lead.create({
-      ...formData,
-      source: 'ventures'
-    });
-    
-    setIsSubmitting(false);
-    setIsSubmitted(true);
+
+    try {
+      const { error } = await supabase
+        .from('leads')
+        .insert([
+          {
+            ...formData,
+            source: 'ventures'
+          }
+        ]);
+
+      if (error) throw error;
+
+      setIsSubmitted(true);
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      alert('אירעה שגיאה בשליחת הטופס. נסה שוב.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (e) => {

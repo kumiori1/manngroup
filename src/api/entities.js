@@ -1,9 +1,3 @@
-import { base44 } from './base44Client';
+import { supabase } from './supabaseClient';
 
-
-export const Lead = base44.entities.Lead;
-
-
-
-// auth sdk:
-export const User = base44.auth;
+export const LeadTable = supabase.from('leads');
